@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsLogMapper">
+    
+    <resultMap type="WcsLog" id="WcsLogResult">
+        <result property="id"    column="id"    />
+        <result property="workName"    column="work_name"    />
+        <result property="barcode"    column="barcode"    />
+        <result property="toPos"    column="to_pos"    />
+        <result property="curPos"    column="cur_pos"    />
+        <result property="bcrNo"    column="bcr_no"    />
+        <result property="sortStatus"    column="sort_status"    />
+        <result property="workCode"    column="work_code"    />
+        <result property="workMsg"    column="work_msg"    />
+        <result property="workProc"    column="work_proc"    />
+        <result property="workSec"    column="work_sec"    />
+        <result property="dvcNo"    column="dvc_no"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="temp1"    column="temp1"    />
+        <result property="temp2"    column="temp2"    />
+        <result property="temp3"    column="temp3"    />
+        <result property="temp4"    column="temp4"    />
+        <result property="temp5"    column="temp5"    />
+
+        <result property="wcsTaskNum"    column="wcsTaskNum"    />
+        <result property="status"    column="status"    />
+        <result property="InductionStatus"    column="Induction_status"    />
+    </resultMap>
+
+    <sql id="selectWcsLogVo">
+
+        select id, work_name, barcode, to_pos, cur_pos, bcr_no, sort_status, work_code, work_msg, work_proc, work_sec, dvc_no, create_date, update_date, temp1, temp2, temp3, temp4, temp5 from wcs_log
+    </sql>
+
+    <select id="selectWcsLogList" parameterType="WcsLog" resultMap="WcsLogResult">
+        select * from (
+        select top(1000) id, work_name, barcode, to_pos, cur_pos, bcr_no, sort_status, work_code, work_msg, work_proc, work_sec, dvc_no, create_date, update_date, temp1, temp2, temp3, temp4, temp5,wcsTaskNum,status,Induction_status
+        from
+        <choose>
+            <!-- 如果传入了 isHistory 且为 true，则查询 wcs_log_bak 表 -->
+            <when test="isHistory != null and isHistory == true">
+                wcs_log_bak
+            </when>
+            <!-- 否则默认查询 wcs_log 表 -->
+            <otherwise>
+                wcs_log
+            </otherwise>
+        </choose>
+        <where>
+            <if test="workName != null  and workName != ''"> and work_name = #{workName}</if>
+            <if test="barcode != null  and barcode != ''"> and barcode = #{barcode}</if>
+            <if test="toPos != null  and toPos != ''"> and to_pos = #{toPos}</if>
+            <if test="curPos != null  and curPos != ''"> and cur_pos = #{curPos}</if>
+            <if test="bcrNo != null  and bcrNo != ''"> and bcr_no = #{bcrNo}</if>
+            <if test="sortStatus != null  and sortStatus != ''"> and sort_status = #{sortStatus}</if>
+            <if test="workCode != null  and workCode != ''"> and work_code = #{workCode}</if>
+            <if test="workMsg != null  and workMsg != ''"> and work_msg like concat('%',#{workMsg},'%')</if>
+            <if test="workProc != null  and workProc != ''"> and work_proc = #{workProc}</if>
+            <if test="workSec != null "> and work_sec = #{workSec}</if>
+            <if test="dvcNo != null  and dvcNo != ''"> and dvc_no = #{dvcNo}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between #{params.beginUpdateDate} and #{params.endUpdateDate}</if>
+            <if test="temp1 != null  and temp1 != ''"> and temp1 = #{temp1}</if>
+            <if test="temp2 != null  and temp2 != ''"> and temp2 = #{temp2}</if>
+            <if test="temp3 != null  and temp3 != ''"> and temp3 = #{temp3}</if>
+            <if test="temp4 != null  and temp4 != ''"> and temp4 = #{temp4}</if>
+            <if test="temp5 != null  and temp5 != ''"> and temp5 = #{temp5}</if>
+
+            <if test="wcsTaskNum != null  and wcsTaskNum != ''"> and wcsTaskNum = #{wcsTaskNum}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="InductionStatus != null  and InductionStatus != ''"> and Induction_status = #{InductionStatus}</if>
+        </where>
+        order by id desc
+        )toped
+    </select>
+
+    <select id="selectWcsLogById" parameterType="Long" resultMap="WcsLogResult">
+        <include refid="selectWcsLogVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWcsLog" parameterType="WcsLog">
+        insert into wcs_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="workName != null">work_name,</if>
+            <if test="barcode != null">barcode,</if>
+            <if test="toPos != null">to_pos,</if>
+            <if test="curPos != null">cur_pos,</if>
+            <if test="bcrNo != null">bcr_no,</if>
+            <if test="sortStatus != null">sort_status,</if>
+            <if test="workCode != null">work_code,</if>
+            <if test="workMsg != null">work_msg,</if>
+            <if test="workProc != null">work_proc,</if>
+            <if test="workSec != null">work_sec,</if>
+            <if test="dvcNo != null">dvc_no,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+            <if test="temp3 != null">temp3,</if>
+            <if test="temp4 != null">temp4,</if>
+            <if test="temp5 != null">temp5,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="workName != null">#{workName},</if>
+            <if test="barcode != null">#{barcode},</if>
+            <if test="toPos != null">#{toPos},</if>
+            <if test="curPos != null">#{curPos},</if>
+            <if test="bcrNo != null">#{bcrNo},</if>
+            <if test="sortStatus != null">#{sortStatus},</if>
+            <if test="workCode != null">#{workCode},</if>
+            <if test="workMsg != null">#{workMsg},</if>
+            <if test="workProc != null">#{workProc},</if>
+            <if test="workSec != null">#{workSec},</if>
+            <if test="dvcNo != null">#{dvcNo},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+            <if test="temp3 != null">#{temp3},</if>
+            <if test="temp4 != null">#{temp4},</if>
+            <if test="temp5 != null">#{temp5},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWcsLog" parameterType="WcsLog">
+        update wcs_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="workName != null">work_name = #{workName},</if>
+            <if test="barcode != null">barcode = #{barcode},</if>
+            <if test="toPos != null">to_pos = #{toPos},</if>
+            <if test="curPos != null">cur_pos = #{curPos},</if>
+            <if test="bcrNo != null">bcr_no = #{bcrNo},</if>
+            <if test="sortStatus != null">sort_status = #{sortStatus},</if>
+            <if test="workCode != null">work_code = #{workCode},</if>
+            <if test="workMsg != null">work_msg = #{workMsg},</if>
+            <if test="workProc != null">work_proc = #{workProc},</if>
+            <if test="workSec != null">work_sec = #{workSec},</if>
+            <if test="dvcNo != null">dvc_no = #{dvcNo},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+            <if test="temp3 != null">temp3 = #{temp3},</if>
+            <if test="temp4 != null">temp4 = #{temp4},</if>
+            <if test="temp5 != null">temp5 = #{temp5},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsLogById" parameterType="Long">
+        delete from wcs_log where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsLogByIds" parameterType="String">
+        delete from wcs_log where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

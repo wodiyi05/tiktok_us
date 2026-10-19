@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <!-- /home/logs/wcs_http_server -->
+    <!-- E:\\logs\\wcs_http_server -->
+    <property name="LOG_HOME" value="D:\\logs\\ruo_yi" />
+
+    <!-- 控制台输出 -->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- 1格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <!-- <charset>gbk</charset> --><!-- 注释掉编码，跟随平台编码 -->
+        </encoder>
+        <!--临界值日志过滤级别配置 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!-- 1在日志级别的基础上过滤掉debug级别以下的日志 -->
+            <level>info</level>
+        </filter>
+    </appender>
+
+
+    <!-- 按照每天生成info日志文件 -->
+    <appender name="infoFile"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!-- 1在日志级别的基础上过滤掉相应级别以下的日志 -->
+            <level>info</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 之前的  rollingPolicy和triggeringPolicy冲突了  用一个新的标签  结合两者 -->
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}\info-more-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <MaxHistory>30</MaxHistory>
+            <!-- 日志文件最大尺寸 -->
+            <maxFileSize>20MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!-- 按照每天生成error日志文件 -->
+    <appender name="errorFile"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <!-- 1在日志级别的基础上过滤掉相应级别以下的日志 -->
+            <level>error</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 之前的  rollingPolicy和triggeringPolicy冲突了  用一个新的标签  结合两者 -->
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_HOME}\error-more-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <!-- 日志文件保留天数 -->
+            <MaxHistory>30</MaxHistory>
+            <!-- 日志文件最大尺寸 -->
+            <maxFileSize>20MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 日志级别排序为： TRACE < DEBUG < INFO < WARN < ERROR -->
+    <!-- 日志输出级别 -->
+    <root level="debug">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="infoFile" />
+        <appender-ref ref="errorFile" />
+    </root>
+</configuration>

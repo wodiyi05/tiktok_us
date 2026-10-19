@@ -1,0 +1,21 @@
+1、sql脚本
+    由原来的mysql直接在navicat里复制到sqlserver的数据库表结构会丢失，具体为表的默认值和自增。所以收动将mysql脚本更改为sqlserver支持的脚本。
+2、在admin的pom里增加sqlserver驱动的dependency。
+3、application-druid.yml的修改
+    a、驱动名——driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    b、url（注意SelectMethod=cursor;）——url: jdbc:sqlserver://127.0.0.1:1433;SelectMethod=cursor;DatabaseName=sqlserver_ry
+    c、validationQuery: SELECT 'x'
+    d、merge-sql: false（有true改为false）
+4、application.yml的修改
+    pagehelper:
+      helperDialect: sqlserver（原本位mysql）
+5、SysMenuMapper.xml
+    所有的ifnull函数改为sqlserver版的ISNULL
+6、GenTableMapper和GenTableColumnMapper
+    改动较多
+7、ctrl+shift+f全文搜索查找limit 1和sysdate().ctrl+shift+r搜索替换
+     limit 1 改为Top 1
+     sysdate（）函数改为getDate()函数
+8、修改sql.vm
+    修改获取上一条数据的标识id方式
+9、修改新增用户时校验用户唯一的三个方法，添加是否删除字段的判断条件

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsLogSumMapper">
+    
+    <resultMap type="WcsLogSum" id="WcsLogSumResult">
+        <result property="id"    column="id"    />
+        <result property="date"    column="date"    />
+        <result property="total"    column="total"    />
+        <result property="normal"    column="normal"    />
+        <result property="reject"    column="reject"    />
+        <result property="noread"    column="noread"    />
+        <result property="notask"    column="notask"    />
+        <result property="apitimeout"    column="apitimeout"    />
+        <result property="dropfail"    column="dropfail"    />
+        <result property="chutelock"    column="chutelock"    />
+        <result property="chutefull"    column="chutefull"    />
+        <result property="multiplebarcodes"    column="multiplebarcodes"    />
+        <result property="gaptoosmall"    column="gaptoosmall"    />
+        <result property="parceltoolarge"    column="parceltoolarge"    />
+        <result property="parcellost"    column="parcellost"    />
+        <result property="plctimeout"    column="plctimeout"    />
+        <result property="temp1"    column="temp1"    />
+        <result property="temp2"    column="temp2"    />
+        <result property="temp3"    column="temp3"    />
+        <result property="temp4"    column="temp4"    />
+    </resultMap>
+
+    <sql id="selectWcsLogSumVo">
+        select id, date, total, normal, reject, noread, notask, apitimeout, dropfail, chutelock, chutefull, multiplebarcodes, gaptoosmall, parceltoolarge, parcellost, plctimeout, temp1, temp2, temp3, temp4 from wcs_log_sum
+    </sql>
+
+    <select id="selectWcsLogSumList" parameterType="WcsLogSum" resultMap="WcsLogSumResult" statementType="CALLABLE">
+        <!-- 🚨 使用标准的 JDBC 存储过程调用语法 -->
+        {call [dbo].[sp_get_sort_sum_report](
+        #{params.beginTime},
+        #{params.endTime},
+        #{dvcNo},
+        #{statType},
+        #{his}
+        )}
+    </select>
+    
+    <select id="selectWcsLogSumById" parameterType="Long" resultMap="WcsLogSumResult">
+        <include refid="selectWcsLogSumVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWcsLogSum" parameterType="WcsLogSum">
+        insert into wcs_log_sum
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="date != null">date,</if>
+            <if test="total != null">total,</if>
+            <if test="normal != null">normal,</if>
+            <if test="reject != null">reject,</if>
+            <if test="noread != null">noread,</if>
+            <if test="notask != null">notask,</if>
+            <if test="apitimeout != null">apitimeout,</if>
+            <if test="dropfail != null">dropfail,</if>
+            <if test="chutelock != null">chutelock,</if>
+            <if test="chutefull != null">chutefull,</if>
+            <if test="multiplebarcodes != null">multiplebarcodes,</if>
+            <if test="gaptoosmall != null">gaptoosmall,</if>
+            <if test="parceltoolarge != null">parceltoolarge,</if>
+            <if test="parcellost != null">parcellost,</if>
+            <if test="plctimeout != null">plctimeout,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+            <if test="temp3 != null">temp3,</if>
+            <if test="temp4 != null">temp4,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="date != null">#{date},</if>
+            <if test="total != null">#{total},</if>
+            <if test="normal != null">#{normal},</if>
+            <if test="reject != null">#{reject},</if>
+            <if test="noread != null">#{noread},</if>
+            <if test="notask != null">#{notask},</if>
+            <if test="apitimeout != null">#{apitimeout},</if>
+            <if test="dropfail != null">#{dropfail},</if>
+            <if test="chutelock != null">#{chutelock},</if>
+            <if test="chutefull != null">#{chutefull},</if>
+            <if test="multiplebarcodes != null">#{multiplebarcodes},</if>
+            <if test="gaptoosmall != null">#{gaptoosmall},</if>
+            <if test="parceltoolarge != null">#{parceltoolarge},</if>
+            <if test="parcellost != null">#{parcellost},</if>
+            <if test="plctimeout != null">#{plctimeout},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+            <if test="temp3 != null">#{temp3},</if>
+            <if test="temp4 != null">#{temp4},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWcsLogSum" parameterType="WcsLogSum">
+        update wcs_log_sum
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="date != null">date = #{date},</if>
+            <if test="total != null">total = #{total},</if>
+            <if test="normal != null">normal = #{normal},</if>
+            <if test="reject != null">reject = #{reject},</if>
+            <if test="noread != null">noread = #{noread},</if>
+            <if test="notask != null">notask = #{notask},</if>
+            <if test="apitimeout != null">apitimeout = #{apitimeout},</if>
+            <if test="dropfail != null">dropfail = #{dropfail},</if>
+            <if test="chutelock != null">chutelock = #{chutelock},</if>
+            <if test="chutefull != null">chutefull = #{chutefull},</if>
+            <if test="multiplebarcodes != null">multiplebarcodes = #{multiplebarcodes},</if>
+            <if test="gaptoosmall != null">gaptoosmall = #{gaptoosmall},</if>
+            <if test="parceltoolarge != null">parceltoolarge = #{parceltoolarge},</if>
+            <if test="parcellost != null">parcellost = #{parcellost},</if>
+            <if test="plctimeout != null">plctimeout = #{plctimeout},</if>
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+            <if test="temp3 != null">temp3 = #{temp3},</if>
+            <if test="temp4 != null">temp4 = #{temp4},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsLogSumById" parameterType="Long">
+        delete from wcs_log_sum where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsLogSumByIds" parameterType="String">
+        delete from wcs_log_sum where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

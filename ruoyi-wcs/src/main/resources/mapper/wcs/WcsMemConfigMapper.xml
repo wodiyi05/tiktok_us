@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsMemConfigMapper">
+    
+    <resultMap type="WcsMemConfig" id="WcsMemConfigResult">
+        <result property="id"    column="id"    />
+        <result property="memItemNo"    column="mem_item_no"    />
+        <result property="memItemType"    column="mem_item_type"    />
+        <result property="memItemCode"    column="mem_item_code"    />
+        <result property="memItemValue"    column="mem_item_value"    />
+        <result property="memItemOldvalue"    column="mem_item_oldvalue"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="temp1"    column="temp1"    />
+        <result property="temp2"    column="temp2"    />
+        <result property="temp3"    column="temp3"    />
+    </resultMap>
+
+    <sql id="selectWcsMemConfigVo">
+        select id, mem_item_no, mem_item_type, mem_item_code, mem_item_value, mem_item_oldvalue, create_date, update_date, temp1, temp2, temp3 from wcs_mem_config
+    </sql>
+
+    <select id="selectWcsMemConfigList" parameterType="WcsMemConfig" resultMap="WcsMemConfigResult">
+        <include refid="selectWcsMemConfigVo"/>
+        <where>  
+            <if test="memItemNo != null  and memItemNo != ''"> and mem_item_no = #{memItemNo}</if>
+            <if test="memItemType != null  and memItemType != ''"> and mem_item_type = #{memItemType}</if>
+            <if test="memItemCode != null  and memItemCode != ''"> and mem_item_code = #{memItemCode}</if>
+            <if test="memItemValue != null  and memItemValue != ''"> and mem_item_value = #{memItemValue}</if>
+            <if test="memItemOldvalue != null  and memItemOldvalue != ''"> and mem_item_oldvalue = #{memItemOldvalue}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between #{params.beginUpdateDate} and #{params.endUpdateDate}</if>
+            <if test="temp1 != null  and temp1 != ''"> and temp1 = #{temp1}</if>
+            <!-- 在这里直接写死固定条件，替换掉原来的 if 判断 -->
+            and temp2 = 'shopee'
+            <if test="temp3 != null  and temp3 != ''"> and temp3 = #{temp3}</if>
+        </where>
+    </select>
+    
+    <select id="selectWcsMemConfigById" parameterType="Long" resultMap="WcsMemConfigResult">
+        <include refid="selectWcsMemConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWcsMemConfig" parameterType="WcsMemConfig">
+        insert into wcs_mem_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="memItemNo != null">mem_item_no,</if>
+            <if test="memItemType != null">mem_item_type,</if>
+            <if test="memItemCode != null">mem_item_code,</if>
+            <if test="memItemValue != null">mem_item_value,</if>
+            <if test="memItemOldvalue != null">mem_item_oldvalue,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+            <if test="temp3 != null">temp3,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="memItemNo != null">#{memItemNo},</if>
+            <if test="memItemType != null">#{memItemType},</if>
+            <if test="memItemCode != null">#{memItemCode},</if>
+            <if test="memItemValue != null">#{memItemValue},</if>
+            <if test="memItemOldvalue != null">#{memItemOldvalue},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+            <if test="temp3 != null">#{temp3},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWcsMemConfig" parameterType="WcsMemConfig">
+        update wcs_mem_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="memItemNo != null">mem_item_no = #{memItemNo},</if>
+            <if test="memItemType != null">mem_item_type = #{memItemType},</if>
+            <if test="memItemCode != null">mem_item_code = #{memItemCode},</if>
+            <if test="memItemValue != null">mem_item_value = #{memItemValue},</if>
+            <if test="memItemOldvalue != null">mem_item_oldvalue = #{memItemOldvalue},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <!-- 去掉 if 判断，直接强制更新为当前时间 -->
+            update_date = getdate(),
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+            <if test="temp3 != null">temp3 = #{temp3},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsMemConfigById" parameterType="Long">
+        delete from wcs_mem_config where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsMemConfigByIds" parameterType="String">
+        delete from wcs_mem_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 调用 sp_wms_offline 存储过程 -->
+    <select id="executeOfflineUpload" statementType="CALLABLE" parameterType="java.util.Map">
+        {call sp_wms_offline(
+                #{p_input, mode=IN, jdbcType=VARCHAR},
+                #{p_code, mode=OUT, jdbcType=VARCHAR},
+                #{p_msg, mode=OUT, jdbcType=VARCHAR}
+              )}
+    </select>
+</mapper>

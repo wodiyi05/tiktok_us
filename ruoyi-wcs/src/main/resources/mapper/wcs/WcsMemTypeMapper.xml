@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsMemTypeMapper">
+    
+    <resultMap type="WcsMemType" id="WcsMemTypeResult">
+        <result property="id"    column="id"    />
+        <result property="memTypeCode"    column="mem_type_code"    />
+        <result property="memTypeName"    column="mem_type_name"    />
+        <result property="memTypeDesc"    column="mem_type_desc"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="temp1"    column="temp1"    />
+        <result property="temp2"    column="temp2"    />
+    </resultMap>
+
+    <sql id="selectWcsMemTypeVo">
+        select id, mem_type_code, mem_type_name, mem_type_desc, create_date, update_date, temp1, temp2 from wcs_mem_type
+    </sql>
+
+    <select id="selectWcsMemTypeList" parameterType="WcsMemType" resultMap="WcsMemTypeResult">
+        <include refid="selectWcsMemTypeVo"/>
+        <where>  
+            <if test="memTypeCode != null  and memTypeCode != ''"> and mem_type_code = #{memTypeCode}</if>
+            <if test="memTypeName != null  and memTypeName != ''"> and mem_type_name = #{memTypeName}</if>
+            <if test="memTypeDesc != null  and memTypeDesc != ''"> and mem_type_desc = #{memTypeDesc}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between #{params.beginUpdateDate} and #{params.endUpdateDate}</if>
+            <if test="temp1 != null  and temp1 != ''"> and temp1 = #{temp1}</if>
+            <if test="temp2 != null  and temp2 != ''"> and temp2 = #{temp2}</if>
+        </where>
+    </select>
+    
+    <select id="selectWcsMemTypeById" parameterType="Long" resultMap="WcsMemTypeResult">
+        <include refid="selectWcsMemTypeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWcsMemType" parameterType="WcsMemType">
+        insert into wcs_mem_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="memTypeCode != null">mem_type_code,</if>
+            <if test="memTypeName != null">mem_type_name,</if>
+            <if test="memTypeDesc != null">mem_type_desc,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="memTypeCode != null">#{memTypeCode},</if>
+            <if test="memTypeName != null">#{memTypeName},</if>
+            <if test="memTypeDesc != null">#{memTypeDesc},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWcsMemType" parameterType="WcsMemType">
+        update wcs_mem_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="memTypeCode != null">mem_type_code = #{memTypeCode},</if>
+            <if test="memTypeName != null">mem_type_name = #{memTypeName},</if>
+            <if test="memTypeDesc != null">mem_type_desc = #{memTypeDesc},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsMemTypeById" parameterType="Long">
+        delete from wcs_mem_type where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsMemTypeByIds" parameterType="String">
+        delete from wcs_mem_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

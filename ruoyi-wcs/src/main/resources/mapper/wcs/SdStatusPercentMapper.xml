@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.SdStatusPercentMapper">
+    
+    <resultMap type="SdStatusPercent" id="SdStatusPercentResult">
+        <result property="id"    column="id"    />
+        <result property="bcr"    column="bcr"    />
+        <result property="total"    column="total"    />
+        <result property="successpercent"    column="successPercent"    />
+        <result property="normal"    column="normal"    />
+        <result property="jam"    column="jam"    />
+        <result property="nodest"    column="noDest"    />
+        <result property="chutefull"    column="chuteFull"    />
+        <result property="chutelock"    column="chuteLock"    />
+        <result property="invaliddest"    column="invalidDest"    />
+        <result property="losetrack"    column="loseTrack"    />
+        <result property="maxloops"    column="maxLoops"    />
+        <result property="gaptollsmall"    column="gapTollSmall"    />
+        <result property="parceltoolarge"    column="parcelTooLarge"    />
+        <result property="temp1"    column="temp1"    />
+        <result property="temp2"    column="temp2"    />
+        <result property="temp3"    column="temp3"    />
+        <result property="temp4"    column="temp4"    />
+        <result property="temp5"    column="temp5"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+    </resultMap>
+
+    <sql id="selectSdStatusPercentVo">
+        select id, bcr, total, successPercent, normal, jam, noDest, chuteFull, chuteLock, invalidDest, loseTrack, maxLoops, gapTollSmall, parcelTooLarge, temp1, temp2, temp3, temp4, temp5, create_date, update_date from sdStatusPercent
+    </sql>
+
+    <select id="selectSdStatusPercentList" parameterType="com.ruoyi.wcs.domain.SdStatusPercent" resultMap="SdStatusPercentResult">
+        SELECT
+        bcr_no AS bcr,
+
+        COUNT(1) as total,
+        -- SuccessPercent: 正常(0)的数量 * 100 / 总数
+        CAST(CAST(SUM(CASE WHEN sort_status = '0' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(1), 0) AS DECIMAL(10,2)) AS VARCHAR) + '%' as successPercent,
+
+        -- 根据截图中的状态码进行精准匹配统计
+        SUM(CASE WHEN sort_status = '0' THEN 1 ELSE 0 END) as normal,            <!-- Normal = 0 -->
+        SUM(CASE WHEN sort_status = '3' THEN 1 ELSE 0 END) as jam,               <!-- Jam = 3 -->
+        SUM(CASE WHEN sort_status = '4' THEN 1 ELSE 0 END) as noDest,            <!-- noDest = 4 -->
+        SUM(CASE WHEN sort_status = '5' THEN 1 ELSE 0 END) as chuteFull,         <!-- ChuteFull = 5 -->
+        SUM(CASE WHEN sort_status = '6' THEN 1 ELSE 0 END) as chuteLock,         <!-- ChuteLock = 6 -->
+        SUM(CASE WHEN sort_status = '7' THEN 1 ELSE 0 END) as invaliddest,      <!-- GapTooSmall = 7 -->
+        SUM(CASE WHEN sort_status = '8' THEN 1 ELSE 0 END) as loseTrack,         <!-- ParcelLost = 8 -->
+        SUM(CASE WHEN sort_status = '9' THEN 1 ELSE 0 END) as maxLoops,    <!-- ParcelTooLarge = 9 -->
+        SUM(CASE WHEN sort_status = '10' THEN 1 ELSE 0 END) as parcelTooLarge,    <!-- ParcelTooLarge = 9 -->
+        SUM(CASE WHEN sort_status = '11' THEN 1 ELSE 0 END) as gapTollSmall,    <!-- ParcelTooLarge = 9 -->
+        SUM(CASE WHEN sort_status = '13' THEN 1 ELSE 0 END) as Other,      <!-- Other = 13 (映射为无分拣计划) -->
+        SUM(CASE WHEN sort_status = '99' THEN 1 ELSE 0 END) as custom          <!-- custom = 99 (映射为最大圈数) -->
+        FROM
+        <choose>
+            <!-- 如果勾选了历史，则查询 wcs_log_bak 表 -->
+            <when test="history != null and history == true">
+                wcs_log_bak
+            </when>
+            <!-- 默认查询 wcs_log 表 -->
+            <otherwise>
+                wcs_log
+            </otherwise>
+        </choose>
+        <where>
+            work_name = 'sd_report_confirm'
+
+            <if test="bcr != null and bcr != ''"> and bcr_no = #{bcr}</if>
+
+            <if test="params.beginTime != null and params.beginTime != ''">
+                and create_date &gt;= #{params.beginTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                and create_date &lt;= #{params.endTime}
+            </if>
+        </where>
+        GROUP BY bcr_no
+    </select>
+    <select id="selectSdStatusPercentById" parameterType="Long" resultMap="SdStatusPercentResult">
+        <include refid="selectSdStatusPercentVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSdStatusPercent" parameterType="SdStatusPercent">
+        insert into sdStatusPercent
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="bcr != null">bcr,</if>
+            <if test="total != null">total,</if>
+            <if test="successpercent != null">successPercent,</if>
+            <if test="normal != null">normal,</if>
+            <if test="jam != null">jam,</if>
+            <if test="nodest != null">noDest,</if>
+            <if test="chutefull != null">chuteFull,</if>
+            <if test="chutelock != null">chuteLock,</if>
+            <if test="invaliddest != null">invalidDest,</if>
+            <if test="losetrack != null">loseTrack,</if>
+            <if test="maxloops != null">maxLoops,</if>
+            <if test="gaptollsmall != null">gapTollSmall,</if>
+            <if test="parceltoolarge != null">parcelTooLarge,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+            <if test="temp3 != null">temp3,</if>
+            <if test="temp4 != null">temp4,</if>
+            <if test="temp5 != null">temp5,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="bcr != null">#{bcr},</if>
+            <if test="total != null">#{total},</if>
+            <if test="successpercent != null">#{successpercent},</if>
+            <if test="normal != null">#{normal},</if>
+            <if test="jam != null">#{jam},</if>
+            <if test="nodest != null">#{nodest},</if>
+            <if test="chutefull != null">#{chutefull},</if>
+            <if test="chutelock != null">#{chutelock},</if>
+            <if test="invaliddest != null">#{invaliddest},</if>
+            <if test="losetrack != null">#{losetrack},</if>
+            <if test="maxloops != null">#{maxloops},</if>
+            <if test="gaptollsmall != null">#{gaptollsmall},</if>
+            <if test="parceltoolarge != null">#{parceltoolarge},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+            <if test="temp3 != null">#{temp3},</if>
+            <if test="temp4 != null">#{temp4},</if>
+            <if test="temp5 != null">#{temp5},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSdStatusPercent" parameterType="SdStatusPercent">
+        update sdStatusPercent
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bcr != null">bcr = #{bcr},</if>
+            <if test="total != null">total = #{total},</if>
+            <if test="successpercent != null">successPercent = #{successpercent},</if>
+            <if test="normal != null">normal = #{normal},</if>
+            <if test="jam != null">jam = #{jam},</if>
+            <if test="nodest != null">noDest = #{nodest},</if>
+            <if test="chutefull != null">chuteFull = #{chutefull},</if>
+            <if test="chutelock != null">chuteLock = #{chutelock},</if>
+            <if test="invaliddest != null">invalidDest = #{invaliddest},</if>
+            <if test="losetrack != null">loseTrack = #{losetrack},</if>
+            <if test="maxloops != null">maxLoops = #{maxloops},</if>
+            <if test="gaptollsmall != null">gapTollSmall = #{gaptollsmall},</if>
+            <if test="parceltoolarge != null">parcelTooLarge = #{parceltoolarge},</if>
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+            <if test="temp3 != null">temp3 = #{temp3},</if>
+            <if test="temp4 != null">temp4 = #{temp4},</if>
+            <if test="temp5 != null">temp5 = #{temp5},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSdStatusPercentById" parameterType="Long">
+        delete from sdStatusPercent where id = #{id}
+    </delete>
+
+    <delete id="deleteSdStatusPercentByIds" parameterType="String">
+        delete from sdStatusPercent where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

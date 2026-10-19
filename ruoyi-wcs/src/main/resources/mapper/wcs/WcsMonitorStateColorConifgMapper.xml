@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsMonitorStateColorConifgMapper">
+
+    <resultMap type="WcsMonitorStateColorConifg" id="WcsMonitorStateColorConifgResult">
+        <result property="id"    column="id"    />
+        <result property="devState"    column="dev_state"    />
+        <result property="devType"    column="dev_type"    />
+        <result property="devName"    column="dev_name"    />
+        <result property="rgbColor"    column="rgb_color"    />
+        <result property="description"    column="description"    />
+        <result property="creatime"    column="creatime"    />
+        <result property="isShow"    column="is_show"    />
+        <result property="modifytime"    column="modifytime"    />
+    </resultMap>
+
+    <sql id="selectWcsMonitorStateColorConifgVo">
+        select id, dev_state, dev_type,dev_name, rgb_color, description, creatime, is_show, modifytime from scada_color_conifg
+    </sql>
+
+    <select id="selectWcsMonitorStateColorConifgList" parameterType="WcsMonitorStateColorConifg" resultMap="WcsMonitorStateColorConifgResult">
+        <include refid="selectWcsMonitorStateColorConifgVo"/>
+        <where>
+            <if test="devType != null  and devType != ''"> and dev_type = #{devType}</if>
+        </where>
+        order by cast(dev_type as int),cast(dev_state as int)
+    </select>
+
+    <select id="selectWcsMonitorStateColorConifgById" parameterType="Long" resultMap="WcsMonitorStateColorConifgResult">
+        <include refid="selectWcsMonitorStateColorConifgVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWcsMonitorStateColorConifg" parameterType="WcsMonitorStateColorConifg">
+        insert into wcs_monitor_state_color_conifg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="devState != null">dev_state,</if>
+            <if test="devType != null">dev_type,</if>
+            <if test="devName != null">dev_Name,</if>
+            <if test="rgbColor != null">rgb_color,</if>
+            <if test="description != null">description,</if>
+            <if test="creatime != null">creatime,</if>
+            <if test="isShow != null">is_show,</if>
+            <if test="modifytime != null">modifytime,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="devState != null">#{devState},</if>
+            <if test="devType != null">#{devType},</if>
+            <if test="devName != null">#{devName},</if>
+            <if test="rgbColor != null">#{rgbColor},</if>
+            <if test="description != null">#{description},</if>
+            <if test="creatime != null">#{creatime},</if>
+            <if test="isShow != null">#{isShow},</if>
+            <if test="modifytime != null">#{modifytime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWcsMonitorStateColorConifg" parameterType="WcsMonitorStateColorConifg">
+        update wcs_monitor_state_color_conifg
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="devState != null">dev_state = #{devState},</if>
+            <if test="devType != null">dev_type = #{devType},</if>
+            <if test="devName != null">dev_name = #{devName},</if>
+            <if test="rgbColor != null">rgb_color = #{rgbColor},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="creatime != null">creatime = #{creatime},</if>
+            <if test="isShow != null">is_show = #{isShow},</if>
+            <if test="modifytime != null">modifytime = #{modifytime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsMonitorStateColorConifgById" parameterType="Long">
+        delete from wcs_monitor_state_color_conifg where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsMonitorStateColorConifgByIds" parameterType="String">
+        delete from wcs_monitor_state_color_conifg where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

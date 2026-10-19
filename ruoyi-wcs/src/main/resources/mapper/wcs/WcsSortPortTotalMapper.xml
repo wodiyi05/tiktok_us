@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsSortPortTotalMapper">
+
+    <select id="selectWcsSortPortTotalList" parameterType="WcsSortPortTotal" resultType="WcsSortPortTotal">
+        SELECT
+        CONVERT(varchar(10), CAST(create_date AS DATE), 120) AS dates,
+        dvc_no AS dvcNo,
+        cur_pos AS chute,
+        COUNT(1) AS total,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 0 THEN 1 ELSE 0 END) AS hour0,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 1 THEN 1 ELSE 0 END) AS hour1,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 2 THEN 1 ELSE 0 END) AS hour2,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 3 THEN 1 ELSE 0 END) AS hour3,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 4 THEN 1 ELSE 0 END) AS hour4,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 5 THEN 1 ELSE 0 END) AS hour5,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 6 THEN 1 ELSE 0 END) AS hour6,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 7 THEN 1 ELSE 0 END) AS hour7,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 8 THEN 1 ELSE 0 END) AS hour8,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 9 THEN 1 ELSE 0 END) AS hour9,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 10 THEN 1 ELSE 0 END) AS hour10,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 11 THEN 1 ELSE 0 END) AS hour11,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 12 THEN 1 ELSE 0 END) AS hour12,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 13 THEN 1 ELSE 0 END) AS hour13,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 14 THEN 1 ELSE 0 END) AS hour14,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 15 THEN 1 ELSE 0 END) AS hour15,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 16 THEN 1 ELSE 0 END) AS hour16,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 17 THEN 1 ELSE 0 END) AS hour17,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 18 THEN 1 ELSE 0 END) AS hour18,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 19 THEN 1 ELSE 0 END) AS hour19,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 20 THEN 1 ELSE 0 END) AS hour20,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 21 THEN 1 ELSE 0 END) AS hour21,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 22 THEN 1 ELSE 0 END) AS hour22,
+        SUM(CASE WHEN DATEPART(hour, create_date) = 23 THEN 1 ELSE 0 END) AS hour23
+        <choose>
+            <when test="isBak != null and isBak == true">
+                FROM wcs_log_bak
+            </when>
+            <otherwise>
+                FROM wcs_log
+            </otherwise>
+        </choose>
+        <where>
+            <if test="dvcNo != null and dvcNo != ''"> AND dvc_no = #{dvcNo} </if>
+            <if test="chute != null and chute != ''"> AND cur_pos = #{chute} </if>
+
+            <!-- 开始时间检索：直接转换为 DATE 类型，等同于当天的 00:00:00.000 -->
+            <if test="params.beginTime != null and params.beginTime != ''">
+                AND create_date &gt;= CAST(#{params.beginTime} AS DATE)
+            </if>
+
+            <!-- 结束时间检索：加 1 天，采用 < 比较，完美避开 23:59:59.999 的毫秒溢出问题 -->
+            <if test="params.endTime != null and params.endTime != ''">
+                AND create_date &lt; DATEADD(day, 1, CAST(#{params.endTime} AS DATE))
+            </if>
+
+            <!-- 默认没有传时间时，查询当天数据 -->
+            <if test="params.beginTime == null or params.beginTime == ''">
+                AND create_date &gt;= CAST(GETDATE() AS DATE)
+                AND create_date &lt; DATEADD(day, 1, CAST(GETDATE() AS DATE))
+            </if>
+
+            AND (work_name = 'sd_report_confirm')
+        </where>
+        -- 核心优化：采用原生 DATE 类型进行底层分组运算
+        GROUP BY CAST(create_date AS DATE), dvc_no, cur_pos
+        ORDER BY dates DESC, dvcNo, chute
+    </select>
+
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsBcrSuccessPercentMapper">
+
+    <resultMap type="WcsBcrSuccessPercent" id="WcsBcrSuccessPercentResult">
+        <result property="id"    column="id"    />
+        <result property="bcr"    column="bcr"    />
+        <result property="total"    column="total"    />
+        <result property="noread"    column="noread"    />
+        <result property="bar000"    column="bar000"    />
+        <result property="bar777"    column="bar777"    />
+        <result property="barEmpty"    column="bar_empty"    />
+        <result property="barSuccess"    column="bar_success"    />
+        <result property="successPercent"    column="success_percent"    />
+        <result property="bar000Percent"    column="bar000_percent"    />
+        <result property="bar777Percent"    column="bar777_percent"    />
+        <result property="barEmptyPercent"    column="bar_empty_percent"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="creatime"    column="creatime"    />
+        <result property="modifytime"    column="modifytime"    />
+    </resultMap>
+
+    <sql id="selectWcsBcrSuccessPercentVo">
+        select id, bcr, total, noread, bar000, bar777, not_noread, success_percent, bar000_percent, bar777_percent, start_time, end_time, creatime, modifytime
+        from wcs_bcr_success_percent
+    </sql>
+
+    <select id="selectWcsBcrSuccessPercentList" parameterType="WcsBcrSuccessPercent" resultMap="WcsBcrSuccessPercentResult">
+        select bcr_no as bcr,total,noread,bar000,bar777,bar_empty,(total - noread) as bar_success,
+        concat(CAST((CAST((total - noread) AS NUMERIC) / total *100) AS NUMERIC(23, 2)),'%') as success_percent,
+        concat(CAST((CAST(bar000 AS NUMERIC) / total *100) AS NUMERIC(23, 2)),'%') as bar000_percent,
+        concat(CAST((CAST(bar777 AS NUMERIC) / total *100) AS NUMERIC(23, 2)),'%') as bar777_percent,
+        concat(CAST((CAST(bar_empty AS NUMERIC) / total *100) AS NUMERIC(23, 2)),'%') as bar_empty_percent,
+        #{params.beginTime} as start_time,
+        #{params.endTime} as end_time
+        from (
+            select
+            bcr_no,count(*) total,
+            sum(CASE WHEN barcode='Noread' THEN 1 ELSE 0 END) AS noread,
+            sum(CASE WHEN barcode='0000000000' THEN 1 ELSE 0 END) AS bar000,
+            sum(CASE WHEN barcode='7777777777' THEN 1 ELSE 0 END) AS bar777,
+            sum(CASE WHEN barcode='' THEN 1 ELSE 0 END) AS bar_empty
+
+        <choose>
+            <when test="isBak != null and isBak == true">
+                from wcs_log_bak
+            </when>
+            <otherwise>
+                from wcs_log
+            </otherwise>
+        </choose>
+
+            <where>
+                <if test="bcr != null  and bcr != ''"> and bcr_no = #{bcr}</if>
+                <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                    and create_date &gt;= #{params.beginTime}
+                </if>
+                <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                    and create_date &lt;= #{params.endTime}
+                </if>
+                <if test="params.beginTime == '' or params.beginTime == null">
+                    and create_date &gt;= convert(varchar(10), getdate(), 120)+' 00:00:00'
+                </if>
+                <if test="params.endTime == '' or params.endTime == null">
+                    and create_date &lt;= convert(varchar(10), DATEADD(Day,1,getdate()), 120)+' 00:00:00'
+                </if>
+                and (work_name='sd_request')
+            </where>
+            GROUP BY bcr_no ) t
+        ORDER BY bcr
+    </select>
+
+    <select id="selectWcsBcrSuccessPercentById" parameterType="Long" resultMap="WcsBcrSuccessPercentResult">
+        <include refid="selectWcsBcrSuccessPercentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWcsBcrSuccessPercent" parameterType="WcsBcrSuccessPercent">
+        insert into wcs_bcr_success_percent
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="bcr != null">bcr,</if>
+            <if test="total != null">total,</if>
+            <if test="noread != null">noread,</if>
+            <if test="bar000 != null">bar000,</if>
+            <if test="bar777 != null">bar777,</if>
+            <if test="notNoread != null">not_noread,</if>
+            <if test="successPercent != null">success_percent,</if>
+            <if test="bar000Percent != null">bar000_percent,</if>
+            <if test="bar777Percent != null">bar777_percent,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="creatime != null">creatime,</if>
+            <if test="modifytime != null">modifytime,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="bcr != null">#{bcr},</if>
+            <if test="total != null">#{total},</if>
+            <if test="noread != null">#{noread},</if>
+            <if test="bar000 != null">#{bar000},</if>
+            <if test="bar777 != null">#{bar777},</if>
+            <if test="notNoread != null">#{notNoread},</if>
+            <if test="successPercent != null">#{successPercent},</if>
+            <if test="bar000Percent != null">#{bar000Percent},</if>
+            <if test="bar777Percent != null">#{bar777Percent},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="creatime != null">#{creatime},</if>
+            <if test="modifytime != null">#{modifytime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWcsBcrSuccessPercent" parameterType="WcsBcrSuccessPercent">
+        update wcs_bcr_success_percent
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bcr != null">bcr = #{bcr},</if>
+            <if test="total != null">total = #{total},</if>
+            <if test="noread != null">noread = #{noread},</if>
+            <if test="bar000 != null">bar000 = #{bar000},</if>
+            <if test="bar777 != null">bar777 = #{bar777},</if>
+            <if test="notNoread != null">not_noread = #{notNoread},</if>
+            <if test="successPercent != null">success_percent = #{successPercent},</if>
+            <if test="bar000Percent != null">bar000_percent = #{bar000Percent},</if>
+            <if test="bar777Percent != null">bar777_percent = #{bar777Percent},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="creatime != null">creatime = #{creatime},</if>
+            <if test="modifytime != null">modifytime = #{modifytime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsBcrSuccessPercentById" parameterType="Long">
+        delete from wcs_bcr_success_percent where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsBcrSuccessPercentByIds" parameterType="String">
+        delete from wcs_bcr_success_percent where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

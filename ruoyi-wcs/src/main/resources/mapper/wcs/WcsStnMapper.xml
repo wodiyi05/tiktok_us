@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsStnMapper">
+    
+    <resultMap type="WcsStn" id="WcsStnResult">
+        <result property="id"    column="STN_ID"    />
+        <result property="stnNo"    column="STN_NO"    />
+        <result property="stnTp"    column="STN_TP"    />
+        <result property="stnSt"    column="STN_ST"    />
+        <result property="stnLogicNo"    column="STN_LOGIC_NO"    />
+        <result property="createDate"    column="CREATE_DATE"    />
+        <result property="updateDate"    column="UPDATE_DATE"    />
+        <result property="dvcId"    column="DVC_ID"    />
+        <result property="errTp"    column="ERR_TP"    />
+        <result property="plcErr"    column="PLC_ERR"    />
+
+        <result property="plcErrOld"    column="PLC_ERR_OLD"    />
+        <result property="controlName"    column="control_name"    />
+        <result property="controlStart"    column="control_start"    />
+        <result property="controlStop"    column="control_stop"    />
+        <result property="controlReset"    column="control_reset"    />
+    </resultMap>
+
+    <sql id="selectWcsStnVo">
+        select ID, STN_NO, STN_TP, STN_ST, STN_LOGIC_NO, CREATE_DATE, UPDATE_DATE, DVC_ID,  ERR_TP, PLC_ERR,  PLC_ERR_OLD, control_name, control_start, control_stop, control_reset from SCADA_STN
+    </sql>
+
+    <select id="selectWcsStnList" parameterType="WcsStn" resultMap="WcsStnResult">
+        <include refid="selectWcsStnVo"/>
+        <where>  
+            <if test="stnNo != null  and stnNo != ''"> and STN_NO = #{stnNo}</if>
+        </where>
+    </select>
+    
+    <select id="selectWcsStnById" parameterType="String" resultMap="WcsStnResult">
+        <include refid="selectWcsStnVo"/>
+        where ID = #{stnId}
+    </select>
+        
+    <insert id="insertWcsStn" parameterType="WcsStn">
+       		{call SP_SCADA_CMD(#{params.dev_no,mode=IN},#{params.type,mode=IN},'','')}
+    </insert>
+
+    <update id="updateWcsStn" parameterType="WcsStn">
+        update SCADA_STN
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stnNo != null">STN_NO = #{stnNo},</if>
+            <if test="stnTp != null">STN_TP = #{stnTp},</if>
+            <if test="stnSt != null">STN_ST = #{stnSt},</if>
+            <if test="stnLogicNo != null">STN_LOGIC_NO = #{stnLogicNo},</if>
+            <if test="createDate != null">CREATE_DATE = #{createDate},</if>
+            <if test="updateDate != null">UPDATE_DATE = #{updateDate},</if>
+            <if test="comments != null">COMMENTS = #{comments},</if>
+            <if test="dvcId != null">DVC_ID = #{dvcId},</if>
+            <if test="flexPenColor != null">FLEX_PEN_COLOR = #{flexPenColor},</if>
+            <if test="flexPath != null">FLEX_PATH = #{flexPath},</if>
+            <if test="timeHour != null">TIME_HOUR = #{timeHour},</if>
+            <if test="timeSecond != null">TIME_SECOND = #{timeSecond},</if>
+            <if test="errTp != null">ERR_TP = #{errTp},</if>
+            <if test="plcErr != null">PLC_ERR = #{plcErr},</if>
+            <if test="stnNoBcr != null">STN_NO_BCR = #{stnNoBcr},</if>
+            <if test="plcErrOld != null">PLC_ERR_OLD = #{plcErrOld},</if>
+            <if test="controlName != null">control_name = #{controlName},</if>
+            <if test="controlStart != null">control_start = #{controlStart},</if>
+            <if test="controlStop != null">control_stop = #{controlStop},</if>
+            <if test="controlReset != null">control_reset = #{controlReset},</if>
+        </trim>
+        where STN_ID = #{stnId}
+    </update>
+
+    <delete id="deleteWcsStnById" parameterType="String">
+        delete from SCADA_STN where STN_ID = #{stnId}
+    </delete>
+
+    <delete id="deleteWcsStnByIds" parameterType="String">
+        delete from SCADA_STN where STN_ID in
+        <foreach item="stnId" collection="array" open="(" separator="," close=")">
+            #{stnId}
+        </foreach>
+    </delete>
+</mapper>

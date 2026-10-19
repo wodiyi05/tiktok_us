@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.PlcErrLogMapper">
+    
+    <resultMap type="PlcErrLog" id="PlcErrLogResult">
+        <result property="errId"    column="ERR_ID"    />
+        <result property="stnNo"    column="STN_NO"    />
+        <result property="dvcId"    column="DVC_ID"    />
+        <result property="plcErr"    column="PLC_ERR"    />
+        <result property="createDate"    column="CREATE_DATE"    />
+        <result property="dealFlag"    column="DEAL_FLAG"    />
+        <result property="propoint"    column="proPoint"    />
+        <result property="proseverity"    column="proSeverity"    />
+        <result property="proclassification"    column="proClassification"    />
+        <result property="updateDate"    column="UPDATE_DATE"    />
+    </resultMap>
+
+    <sql id="selectPlcErrLogVo">
+        select ERR_ID, STN_NO, DVC_ID, PLC_ERR, CREATE_DATE, DEAL_FLAG, proPoint, proSeverity, proClassification, UPDATE_DATE from scada_err_log
+    </sql>
+
+    <select id="selectPlcErrLogList" parameterType="PlcErrLog" resultMap="PlcErrLogResult">
+        <include refid="selectPlcErrLogVo"/>
+        <where>  
+            <if test="errId != null  and errId != ''"> and ERR_ID = #{errId}</if>
+            <if test="stnNo != null  and stnNo != ''"> and STN_NO = #{stnNo}</if>
+            <if test="plcErr != null  and plcErr != ''"> and PLC_ERR like concat('%', #{plcErr}, '%')</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and CREATE_DATE between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+        </where>
+        order by ERR_ID desc
+    </select>
+    
+    <select id="selectPlcErrLogById" parameterType="String" resultMap="PlcErrLogResult">
+        <include refid="selectPlcErrLogVo"/>
+        where ERR_ID = #{errId}
+    </select>
+        
+    <insert id="insertPlcErrLog" parameterType="PlcErrLog">
+        insert into PLC_ERR_LOG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="errId != null">ERR_ID,</if>
+            <if test="stnNo != null">STN_NO,</if>
+            <if test="dvcId != null">DVC_ID,</if>
+            <if test="plcErr != null">PLC_ERR,</if>
+            <if test="createDate != null">CREATE_DATE,</if>
+            <if test="dealFlag != null">DEAL_FLAG,</if>
+            <if test="propoint != null">proPoint,</if>
+            <if test="proseverity != null">proSeverity,</if>
+            <if test="proclassification != null">proClassification,</if>
+            <if test="updateDate != null">UPDATE_DATE,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="errId != null">#{errId},</if>
+            <if test="stnNo != null">#{stnNo},</if>
+            <if test="dvcId != null">#{dvcId},</if>
+            <if test="plcErr != null">#{plcErr},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="dealFlag != null">#{dealFlag},</if>
+            <if test="propoint != null">#{propoint},</if>
+            <if test="proseverity != null">#{proseverity},</if>
+            <if test="proclassification != null">#{proclassification},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePlcErrLog" parameterType="PlcErrLog">
+        update PLC_ERR_LOG
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stnNo != null">STN_NO = #{stnNo},</if>
+            <if test="dvcId != null">DVC_ID = #{dvcId},</if>
+            <if test="plcErr != null">PLC_ERR = #{plcErr},</if>
+            <if test="createDate != null">CREATE_DATE = #{createDate},</if>
+            <if test="dealFlag != null">DEAL_FLAG = #{dealFlag},</if>
+            <if test="propoint != null">proPoint = #{propoint},</if>
+            <if test="proseverity != null">proSeverity = #{proseverity},</if>
+            <if test="proclassification != null">proClassification = #{proclassification},</if>
+            <if test="updateDate != null">UPDATE_DATE = #{updateDate},</if>
+        </trim>
+        where ERR_ID = #{errId}
+    </update>
+
+    <delete id="deletePlcErrLogById" parameterType="String">
+        delete from PLC_ERR_LOG where ERR_ID = #{errId}
+    </delete>
+
+    <delete id="deletePlcErrLogByIds" parameterType="String">
+        delete from PLC_ERR_LOG where ERR_ID in 
+        <foreach item="errId" collection="array" open="(" separator="," close=")">
+            #{errId}
+        </foreach>
+    </delete>
+</mapper>

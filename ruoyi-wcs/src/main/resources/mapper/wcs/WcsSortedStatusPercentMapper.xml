@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsSortedStatusPercentMapper">
+
+    <resultMap type="WcsSortedStatusPercent" id="WcsSortedStatusPercentResult">
+        <result property="id" column="id" />
+        <result property="bcr" column="bcr" />
+        <result property="total" column="total" />
+        <result property="successPercent" column="success_percent" />
+        <result property="normal" column="Normal" />
+        <result property="noBarcode" column="NoBarcode" />
+        <result property="noScanner" column="NoScanner" />
+        <result property="multiBarcode" column="MultiBarcode" />
+        <result property="noDest" column="NoDest" />
+        <result property="chuteFull" column="ChuteFull" />
+        <result property="chuteFault" column="ChuteFault" />
+        <result property="invalidDest" column="InvalidDest" />
+        <result property="trackFailed" column="TrackFailed" />
+        <result property="destDelay" column="DestDelay" />
+        <result property="distanceError0" column="DistanceError0" />
+        <result property="distanceError1" column="DistanceError1" />
+        <result property="distanceError2" column="DistanceError2" />
+        <result property="distanceError3" column="DistanceError3" />
+        <result property="distanceError4" column="DistanceError4" />
+        <result property="distanceError5" column="DistanceError5" />
+        <result property="distanceError6" column="DistanceError6" />
+        <result property="missedData" column="MissedData" />
+        <result property="trackingFailed" column="TrackingFailed" />
+        <result property="forceSorting" column="ForceSorting" />
+        <result property="measureFault" column="MeasureFault" />
+        <result property="parcelLengthFault" column="ParcelLengthFault" />
+        <result property="exceedMaxLength" column="ExceedMaxLength" />
+        <result property="toteExitSuccess" column="ToteExitSuccess" />
+        <result property="other" column="Other" />
+        <result property="unknownState" column="unknownState" />
+        <result property="temp1" column="temp1" />
+        <result property="temp2" column="temp2" />
+        <result property="temp3" column="temp3" />
+        <result property="temp4" column="temp4" />
+        <result property="createDate" column="create_date" />
+        <result property="updateDate" column="update_date" />
+    </resultMap>
+    <sql id="selectWcsSortedStatusPercentVo">
+        select id, bcr, total, success_percent, normal_0, noread_1, nocode_2, more_barcode_3, wcs_no_dest_4, pos_full_5, pos_close_6, unknown_dest_7, tracking_error_8, exceed_max_circle_9, gad_too_small_10, length_error_11, state_13, state_99, other, temp1, temp2, temp3, temp4, create_date, update_date from wcs_sorted_status_percent
+    </sql>
+
+    <select id="selectWcsSortedStatusPercentList" parameterType="WcsSortedStatusPercent" resultMap="WcsSortedStatusPercentResult">
+        select
+        *,
+        <!-- 这里将原来的 normal_0 修正为与内部一致的 Normal -->
+        concat(CAST((CAST(Normal AS NUMERIC) / NULLIF(total, 0) * 100) AS NUMERIC(23, 2)), '%') as success_percent
+        from (
+        select
+        bcr_no as bcr,
+        count(bcr_no) as total,
+        sum(CASE WHEN sort_status = '0'  THEN 1 ELSE 0 END) AS Normal,              <!-- 0 正常 -->
+        sum(CASE WHEN sort_status = '1'  THEN 1 ELSE 0 END) AS NoBarcode,           <!-- 1 没读到条码 -->
+        sum(CASE WHEN sort_status = '2'  THEN 1 ELSE 0 END) AS NoScanner,           <!-- 2 没读码器信息 -->
+        sum(CASE WHEN sort_status = '3'  THEN 1 ELSE 0 END) AS MultiBarcode,        <!-- 3 多条码 -->
+        sum(CASE WHEN sort_status = '4'  THEN 1 ELSE 0 END) AS NoDest,              <!-- 4 未反馈目的地 -->
+        sum(CASE WHEN sort_status = '5'  THEN 1 ELSE 0 END) AS ChuteFull,           <!-- 5 出口满格 -->
+        sum(CASE WHEN sort_status = '6'  THEN 1 ELSE 0 END) AS ChuteFault,          <!-- 6 出口故障或软关闭 -->
+        sum(CASE WHEN sort_status = '7'  THEN 1 ELSE 0 END) AS InvalidDest,         <!-- 7 目的地地址无效 -->
+        sum(CASE WHEN sort_status = '8'  THEN 1 ELSE 0 END) AS TrackFailed,         <!-- 8 跟踪丢失 -->
+        sum(CASE WHEN sort_status = '9'  THEN 1 ELSE 0 END) AS DestDelay,           <!-- 9 目的地反馈延迟 -->
+        sum(CASE WHEN sort_status = '10' THEN 1 ELSE 0 END) AS DistanceError0,      <!-- 10 间距过小 -->
+        sum(CASE WHEN sort_status = '11' THEN 1 ELSE 0 END) AS DistanceError1,      <!-- 11 同周期跟踪丢失 -->
+        sum(CASE WHEN sort_status = '12' THEN 1 ELSE 0 END) AS DistanceError2,      <!-- 12 窗口内多组数据跟踪丢失 -->
+        sum(CASE WHEN sort_status = '13' THEN 1 ELSE 0 END) AS DistanceError3,      <!-- 13 跟踪数据未传出成功 -->
+        sum(CASE WHEN sort_status = '14' THEN 1 ELSE 0 END) AS DistanceError4,      <!-- 14 跟踪数据未传入成功 -->
+        sum(CASE WHEN sort_status = '15' THEN 1 ELSE 0 END) AS DistanceError5,      <!-- 15 跟踪数据冲突被覆盖 -->
+        sum(CASE WHEN sort_status = '16' THEN 1 ELSE 0 END) AS DistanceError6,      <!-- 16 占位不存在被抛弃 -->
+        sum(CASE WHEN sort_status = '17' THEN 1 ELSE 0 END) AS MissedData,          <!-- 17 数据被手动清除 -->
+        sum(CASE WHEN sort_status = '18' THEN 1 ELSE 0 END) AS TrackingFailed,      <!-- 18 跟踪丢失 -->
+        sum(CASE WHEN sort_status = '19' THEN 1 ELSE 0 END) AS ForceSorting,        <!-- 19 强制分拣 -->
+        sum(CASE WHEN sort_status = '20' THEN 1 ELSE 0 END) AS MeasureFault,        <!-- 20 包裹检测异常 -->
+        sum(CASE WHEN sort_status = '21' THEN 1 ELSE 0 END) AS ParcelLengthFault,   <!-- 21 包裹长度突变 -->
+        sum(CASE WHEN sort_status = '22' THEN 1 ELSE 0 END) AS ExceedMaxLength,     <!-- 22 包裹长度超长 -->
+        sum(CASE WHEN sort_status = '23' THEN 1 ELSE 0 END) AS ToteExitSuccess,     <!-- 23 缓存道出箱完成 -->
+        sum(CASE WHEN sort_status = '99' THEN 1 ELSE 0 END) AS Other,               <!-- 99 其他 -->
+        sum(CASE WHEN sort_status not in ('0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','99') THEN 1 ELSE 0 END) AS UnknownState
+
+        <choose>
+            <when test="isBak != null and isBak == true">
+                from wcs_log_bak
+            </when>
+            <otherwise>
+                from wcs_log
+            </otherwise>
+        </choose>
+
+        <where>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''">
+                and create_date between #{params.beginCreateDate} and #{params.endCreateDate}
+            </if>
+            <if test="bcr != null and bcr != ''">
+                and bcr_no = #{bcr}
+            </if>
+            and work_name = 'sd_report_confirm'
+        </where>
+        group by bcr_no
+        ) as log
+        order by bcr
+    </select>
+
+    <select id="selectWcsSortedStatusPercentById" parameterType="Long" resultMap="WcsSortedStatusPercentResult">
+        <include refid="selectWcsSortedStatusPercentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWcsSortedStatusPercent" parameterType="WcsSortedStatusPercent">
+        insert into wcs_sorted_status_percent
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="bcr != null">bcr,</if>
+            <if test="total != null">total,</if>
+            <if test="successPercent != null">success_percent,</if>
+            <if test="normal0 != null">normal_0,</if>
+            <if test="noread1 != null">noread_1,</if>
+            <if test="nocode2 != null">nocode_2,</if>
+            <if test="moreBarcode3 != null">more_barcode_3,</if>
+            <if test="wcsNoDest4 != null">wcs_no_dest_4,</if>
+            <if test="posFull5 != null">pos_full_5,</if>
+            <if test="posClose6 != null">pos_close_6,</if>
+            <if test="unknownDest7 != null">unknown_dest_7,</if>
+            <if test="trackingError8 != null">tracking_error_8,</if>
+            <if test="exceedMaxCircle9 != null">exceed_max_circle_9,</if>
+            <if test="gadTooSmall10 != null">gad_too_small_10,</if>
+            <if test="lengthError11 != null">length_error_11,</if>
+            <if test="state13 != null">state_13,</if>
+            <if test="state99 != null">state_99,</if>
+            <if test="other != null">other,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+            <if test="temp3 != null">temp3,</if>
+            <if test="temp4 != null">temp4,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="bcr != null">#{bcr},</if>
+            <if test="total != null">#{total},</if>
+            <if test="successPercent != null">#{successPercent},</if>
+            <if test="normal0 != null">#{normal0},</if>
+            <if test="noread1 != null">#{noread1},</if>
+            <if test="nocode2 != null">#{nocode2},</if>
+            <if test="moreBarcode3 != null">#{moreBarcode3},</if>
+            <if test="wcsNoDest4 != null">#{wcsNoDest4},</if>
+            <if test="posFull5 != null">#{posFull5},</if>
+            <if test="posClose6 != null">#{posClose6},</if>
+            <if test="unknownDest7 != null">#{unknownDest7},</if>
+            <if test="trackingError8 != null">#{trackingError8},</if>
+            <if test="exceedMaxCircle9 != null">#{exceedMaxCircle9},</if>
+            <if test="gadTooSmall10 != null">#{gadTooSmall10},</if>
+            <if test="lengthError11 != null">#{lengthError11},</if>
+            <if test="state13 != null">#{state13},</if>
+            <if test="state99 != null">#{state99},</if>
+            <if test="other != null">#{other},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+            <if test="temp3 != null">#{temp3},</if>
+            <if test="temp4 != null">#{temp4},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWcsSortedStatusPercent" parameterType="WcsSortedStatusPercent">
+        update wcs_sorted_status_percent
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bcr != null">bcr = #{bcr},</if>
+            <if test="total != null">total = #{total},</if>
+            <if test="successPercent != null">success_percent = #{successPercent},</if>
+            <if test="normal0 != null">normal_0 = #{normal0},</if>
+            <if test="noread1 != null">noread_1 = #{noread1},</if>
+            <if test="nocode2 != null">nocode_2 = #{nocode2},</if>
+            <if test="moreBarcode3 != null">more_barcode_3 = #{moreBarcode3},</if>
+            <if test="wcsNoDest4 != null">wcs_no_dest_4 = #{wcsNoDest4},</if>
+            <if test="posFull5 != null">pos_full_5 = #{posFull5},</if>
+            <if test="posClose6 != null">pos_close_6 = #{posClose6},</if>
+            <if test="unknownDest7 != null">unknown_dest_7 = #{unknownDest7},</if>
+            <if test="trackingError8 != null">tracking_error_8 = #{trackingError8},</if>
+            <if test="exceedMaxCircle9 != null">exceed_max_circle_9 = #{exceedMaxCircle9},</if>
+            <if test="gadTooSmall10 != null">gad_too_small_10 = #{gadTooSmall10},</if>
+            <if test="lengthError11 != null">length_error_11 = #{lengthError11},</if>
+            <if test="state13 != null">state_13 = #{state13},</if>
+            <if test="state99 != null">state_99 = #{state99},</if>
+            <if test="other != null">other = #{other},</if>
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+            <if test="temp3 != null">temp3 = #{temp3},</if>
+            <if test="temp4 != null">temp4 = #{temp4},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsSortedStatusPercentById" parameterType="Long">
+        delete from wcs_sorted_status_percent where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsSortedStatusPercentByIds" parameterType="String">
+        delete from wcs_sorted_status_percent where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

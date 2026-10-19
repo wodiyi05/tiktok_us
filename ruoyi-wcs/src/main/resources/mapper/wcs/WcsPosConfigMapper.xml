@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsPosConfigMapper">
+    
+    <resultMap type="WcsPosConfig" id="WcsPosConfigResult">
+        <result property="id"    column="id"    />
+        <result property="wmsToPos"    column="wms_to_pos"    />
+        <result property="wcsToPos"    column="wcs_to_pos"    />
+        <result property="plcToPos"    column="plc_to_pos"    />
+        <result property="posDesc"    column="pos_desc"    />
+        <result property="stnNo"    column="stn_no"    />
+        <result property="stnMode"    column="stn_mode"    />
+        <result property="stnSt"    column="stn_st"    />
+        <result property="stnType"    column="stn_type"    />
+        <result property="ledNo"    column="led_no"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="temp1"    column="temp1"    />
+        <result property="temp2"    column="temp2"    />
+        <result property="temp3"    column="temp3"    />
+    </resultMap>
+
+    <sql id="selectWcsPosConfigVo">
+        select id, wms_to_pos, wcs_to_pos, plc_to_pos, pos_desc, stn_no, stn_mode, stn_st, stn_type, led_no, create_date, update_date, temp1, temp2, temp3 from wcs_pos_config
+    </sql>
+
+    <select id="selectWcsPosConfigList" parameterType="WcsPosConfig" resultMap="WcsPosConfigResult">
+        <include refid="selectWcsPosConfigVo"/>
+        <where>  
+            <if test="wmsToPos != null  and wmsToPos != ''"> and wms_to_pos = #{wmsToPos}</if>
+            <if test="wcsToPos != null  and wcsToPos != ''"> and wcs_to_pos = #{wcsToPos}</if>
+            <if test="plcToPos != null  and plcToPos != ''"> and plc_to_pos = #{plcToPos}</if>
+            <if test="posDesc != null  and posDesc != ''"> and pos_desc = #{posDesc}</if>
+            <if test="stnNo != null  and stnNo != ''"> and stn_no = #{stnNo}</if>
+            <if test="stnMode != null  and stnMode != ''"> and stn_mode = #{stnMode}</if>
+            <if test="stnSt != null  and stnSt != ''"> and stn_st = #{stnSt}</if>
+            <if test="stnType != null  and stnType != ''"> and stn_type = #{stnType}</if>
+            <if test="ledNo != null  and ledNo != ''"> and led_no = #{ledNo}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between #{params.beginUpdateDate} and #{params.endUpdateDate}</if>
+            <if test="temp1 != null  and temp1 != ''"> and temp1 = #{temp1}</if>
+            <if test="temp2 != null  and temp2 != ''"> and temp2 = #{temp2}</if>
+            <if test="temp3 != null  and temp3 != ''"> and temp3 = #{temp3}</if>
+        </where>
+    </select>
+    
+    <select id="selectWcsPosConfigById" parameterType="Long" resultMap="WcsPosConfigResult">
+        <include refid="selectWcsPosConfigVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWcsPosConfig" parameterType="WcsPosConfig">
+        insert into wcs_pos_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="wmsToPos != null">wms_to_pos,</if>
+            <if test="wcsToPos != null">wcs_to_pos,</if>
+            <if test="plcToPos != null">plc_to_pos,</if>
+            <if test="posDesc != null">pos_desc,</if>
+            <if test="stnNo != null">stn_no,</if>
+            <if test="stnMode != null">stn_mode,</if>
+            <if test="stnSt != null">stn_st,</if>
+            <if test="stnType != null">stn_type,</if>
+            <if test="ledNo != null">led_no,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+            <if test="temp3 != null">temp3,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="wmsToPos != null">#{wmsToPos},</if>
+            <if test="wcsToPos != null">#{wcsToPos},</if>
+            <if test="plcToPos != null">#{plcToPos},</if>
+            <if test="posDesc != null">#{posDesc},</if>
+            <if test="stnNo != null">#{stnNo},</if>
+            <if test="stnMode != null">#{stnMode},</if>
+            <if test="stnSt != null">#{stnSt},</if>
+            <if test="stnType != null">#{stnType},</if>
+            <if test="ledNo != null">#{ledNo},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+            <if test="temp3 != null">#{temp3},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWcsPosConfig" parameterType="WcsPosConfig">
+        update wcs_pos_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wmsToPos != null">wms_to_pos = #{wmsToPos},</if>
+            <if test="wcsToPos != null">wcs_to_pos = #{wcsToPos},</if>
+            <if test="plcToPos != null">plc_to_pos = #{plcToPos},</if>
+            <if test="posDesc != null">pos_desc = #{posDesc},</if>
+            <if test="stnNo != null">stn_no = #{stnNo},</if>
+            <if test="stnMode != null">stn_mode = #{stnMode},</if>
+            <if test="stnSt != null">stn_st = #{stnSt},</if>
+            <if test="stnType != null">stn_type = #{stnType},</if>
+            <if test="ledNo != null">led_no = #{ledNo},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+            <if test="temp3 != null">temp3 = #{temp3},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsPosConfigById" parameterType="Long">
+        delete from wcs_pos_config where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsPosConfigByIds" parameterType="String">
+        delete from wcs_pos_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

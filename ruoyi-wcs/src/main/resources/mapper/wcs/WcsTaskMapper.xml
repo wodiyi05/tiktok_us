@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.wcs.mapper.WcsTaskMapper">
+    
+    <resultMap type="WcsTask" id="WcsTaskResult">
+        <result property="id"    column="id"    />
+        <result property="taskNo"    column="task_no"    />
+        <result property="barcode"    column="barcode"    />
+        <result property="curPos"    column="cur_pos"    />
+        <result property="toPos"    column="to_pos"    />
+        <result property="priority"    column="priority"    />
+        <result property="taskType"    column="task_type"    />
+        <result property="status"    column="status"    />
+        <result property="createDate"    column="create_date"    />
+        <result property="updateDate"    column="update_date"    />
+        <result property="temp1"    column="temp1"    />
+        <result property="temp2"    column="temp2"    />
+        <result property="temp3"    column="temp3"    />
+        <result property="temp4"    column="temp4"    />
+        <result property="temp5"    column="temp5"    />
+        <result property="url" column="url" />
+    </resultMap>
+
+    <sql id="selectWcsTaskVo">
+        select id, task_no, barcode, cur_pos, to_pos, priority, task_type, status, create_date, update_date, temp1, temp2, temp3, temp4, temp5,url from wcs_task
+    </sql>
+
+    <select id="selectWcsTaskList" parameterType="WcsTask" resultMap="WcsTaskResult">
+        <!-- 移除原来的 include 标签，把字段手写出来，并动态拼接表名 -->
+        select id, task_no, barcode, cur_pos, to_pos, priority, task_type, status, create_date, update_date, temp1, temp2, temp3, temp4, temp5, url
+        from
+        <choose>
+            <!-- 如果传入了 isHistory 且为 true，则查询 wcs_task_bak 表 -->
+            <when test="isHistory != null and isHistory == true">
+                wcs_task_bak
+            </when>
+            <!-- 否则默认查询 wcs_task 表 -->
+            <otherwise>
+                wcs_task
+            </otherwise>
+        </choose>
+        <where>
+            <if test="taskNo != null  and taskNo != ''"> and task_no = #{taskNo}</if>
+            <if test="barcode != null  and barcode != ''"> and barcode = #{barcode}</if>
+            <if test="curPos != null  and curPos != ''"> and cur_pos = #{curPos}</if>
+            <if test="toPos != null  and toPos != ''"> and to_pos = #{toPos}</if>
+            <if test="priority != null  and priority != ''"> and priority = #{priority}</if>
+            <if test="taskType != null  and taskType != ''"> and task_type = #{taskType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="params.beginCreateDate != null and params.beginCreateDate != '' and params.endCreateDate != null and params.endCreateDate != ''"> and create_date between #{params.beginCreateDate} and #{params.endCreateDate}</if>
+            <if test="params.beginUpdateDate != null and params.beginUpdateDate != '' and params.endUpdateDate != null and params.endUpdateDate != ''"> and update_date between #{params.beginUpdateDate} and #{params.endUpdateDate}</if>
+            <if test="temp1 != null  and temp1 != ''"> and temp1 = #{temp1}</if>
+            <if test="temp2 != null  and temp2 != ''"> and temp2 = #{temp2}</if>
+            <if test="temp3 != null  and temp3 != ''"> and temp3 = #{temp3}</if>
+            <if test="temp4 != null  and temp4 != ''"> and temp4 = #{temp4}</if>
+            <if test="temp5 != null  and temp5 != ''"> and temp5 = #{temp5}</if>
+        </where>
+        order by id desc
+    </select>
+    
+    <select id="selectWcsTaskById" parameterType="Long" resultMap="WcsTaskResult">
+        <include refid="selectWcsTaskVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWcsTask" parameterType="WcsTask">
+        insert into wcs_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="taskNo != null">task_no,</if>
+            <if test="barcode != null">barcode,</if>
+            <if test="curPos != null">cur_pos,</if>
+            <if test="toPos != null">to_pos,</if>
+            <if test="priority != null">priority,</if>
+            <if test="taskType != null">task_type,</if>
+            <if test="status != null">status,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="updateDate != null">update_date,</if>
+            <if test="temp1 != null">temp1,</if>
+            <if test="temp2 != null">temp2,</if>
+            <if test="temp3 != null">temp3,</if>
+            <if test="temp4 != null">temp4,</if>
+            <if test="temp5 != null">temp5,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="taskNo != null">#{taskNo},</if>
+            <if test="barcode != null">#{barcode},</if>
+            <if test="curPos != null">#{curPos},</if>
+            <if test="toPos != null">#{toPos},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="taskType != null">#{taskType},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createDate != null">#{createDate},</if>
+            <if test="updateDate != null">#{updateDate},</if>
+            <if test="temp1 != null">#{temp1},</if>
+            <if test="temp2 != null">#{temp2},</if>
+            <if test="temp3 != null">#{temp3},</if>
+            <if test="temp4 != null">#{temp4},</if>
+            <if test="temp5 != null">#{temp5},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWcsTask" parameterType="WcsTask">
+        update wcs_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskNo != null">task_no = #{taskNo},</if>
+            <if test="barcode != null">barcode = #{barcode},</if>
+            <if test="curPos != null">cur_pos = #{curPos},</if>
+            <if test="toPos != null">to_pos = #{toPos},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="taskType != null">task_type = #{taskType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createDate != null">create_date = #{createDate},</if>
+            <if test="updateDate != null">update_date = #{updateDate},</if>
+            <if test="temp1 != null">temp1 = #{temp1},</if>
+            <if test="temp2 != null">temp2 = #{temp2},</if>
+            <if test="temp3 != null">temp3 = #{temp3},</if>
+            <if test="temp4 != null">temp4 = #{temp4},</if>
+            <if test="temp5 != null">temp5 = #{temp5},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWcsTaskById" parameterType="Long">
+        delete from wcs_task where id = #{id}
+    </delete>
+
+    <delete id="deleteWcsTaskByIds" parameterType="String">
+        delete from wcs_task where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
